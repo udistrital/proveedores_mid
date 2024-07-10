@@ -1,34 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ContratistasService } from './contratistas.service';
-import { CreateContratistaDto } from './dto/create-contratista.dto';
-import { UpdateContratistaDto } from './dto/update-contratista.dto';
+import { PersonaNaturalDto } from './dto/persona-natural.dto';
+import { PersonaJuridicaDto } from './dto/persona-juridica.dto';
 
 @Controller('contratistas')
 export class ContratistasController {
   constructor(private readonly contratistasService: ContratistasService) {}
 
-  @Post()
-  create(@Body() createContratistaDto: CreateContratistaDto) {
-    return this.contratistasService.create(createContratistaDto);
-  }
-
   @Get()
   findAll() {
-    return this.contratistasService.findAll();
+    try {
+      return this.contratistasService.obtenerListado();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.contratistasService.findOne(+id);
-  }
+  findOne(
+    @Param('id') id: string,
+    @Query('tipo') tipo: string,
+  ): PersonaNaturalDto | PersonaJuridicaDto {
+    if (!id || !tipo) {
+      throw new HttpException(
+        'Parámetro faltante. Id o Tipo',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContratistaDto: UpdateContratistaDto) {
-    return this.contratistasService.update(+id, updateContratistaDto);
-  }
+    if (tipo == 'persona_natural') {
+      return this.contratistasService.obtenerPersonaNatural(id);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.contratistasService.remove(+id);
+    if (tipo == 'persona_juridica') {
+      return this.contratistasService.obtenerPersonaJuridica(id);
+    }
   }
 }
