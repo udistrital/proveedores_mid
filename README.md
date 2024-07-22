@@ -48,7 +48,11 @@ Nota: En caso de no asignar el puerto en las variables de entorno, se asignará 
 
 Pruebas unitarias
 ```shell
-# En Proceso
+# Test
+pnpm test
+
+# Se ejecutará jest, validando los casos de prueba en los archivos .spec.ts
+
 ```
 
 ## Estado CI
