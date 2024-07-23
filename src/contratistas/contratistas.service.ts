@@ -1,66 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import { ListaContratistasDto } from './dto/lista-contratistas.dto';
-import { PersonaNaturalDto } from './dto/persona-natural.dto';
-import { PersonaJuridicaDto } from './dto/persona-juridica.dto';
-import { informacionPersonaJuridica, informacionPersonaNatural } from './mocks';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import { ProveedorDto } from './dto/proveedor.dto';
+import { DetalleProveedorDto } from './dto/detalle-proveedor.dto';
+
+interface responseData {
+  proveedores: {
+    proveedor: ProveedorDto[];
+  };
+}
+
+interface responseDetalleData {
+  personas_naturales: {
+    proveedor: DetalleProveedorDto[];
+  };
+}
 
 @Injectable()
 export class ContratistasService {
-  obtenerListado() {
-    //Llamar al endpoint de persona_natural
-    //Llamar al endpoint de persona_juridica
+  constructor(private configService: ConfigService) {}
 
-    //Combinar los resultados
-    return this.combinarResultados(
-      informacionPersonaNatural,
-      informacionPersonaJuridica,
-    );
-  }
+  async obtenerProveedor(id: string): Promise<StandardResponse<any>> {
+    try {
+      const endpoint: string =
+        this.configService.get<string>('ENDP_PROVEEDORES');
+      const url = `${endpoint}/${id}`;
+      const { data } = await axios.get<responseData>(url);
 
-  obtenerPersonaNatural(id: string) {
-    //Llamar al endpoint de persona_natural
-    return informacionPersonaNatural.find(
-      (personaNatural) => `${personaNatural.Id}` === id,
-    );
-  }
-
-  obtenerPersonaJuridica(id: string) {
-    //Llamar al endpoint de persona_juridica
-    return informacionPersonaJuridica.find(
-      (personaJuridica) => `${personaJuridica.Id}` === id,
-    );
-  }
-
-  combinarResultados(
-    listaPersonaNatural: PersonaNaturalDto[],
-    listaPersonaJuridica: PersonaJuridicaDto[],
-  ): ListaContratistasDto[] {
-    const ids = new Set<string>();
-
-    return [
-      ...listaPersonaNatural.map((personaNatural) => {
-        if (ids.has(`${personaNatural.Id}`)) {
-          throw new Error(`El id ${personaNatural.Id} ya existe en la lista`);
-        }
-        ids.add(`${personaNatural.Id}`);
+      if (
+        data.proveedores == undefined ||
+        data.proveedores.proveedor == undefined
+      ) {
         return {
-          id: `${personaNatural.Id}`,
-          nombre: `${personaNatural.PrimerNombre} ${personaNatural.SegundoNombre} ${personaNatural.PrimerApellido} ${personaNatural.SegundoApellido}`,
-          tipo: 'persona_natural',
+          Success: false,
+          Status: HttpStatus.NOT_FOUND,
+          Message: 'Proveedor no encontrado',
         };
-      }),
-      ...listaPersonaJuridica.map((personaJuridica) => {
-        if (ids.has(`${personaJuridica.Id}`)) {
-          throw new Error(`El id ${personaJuridica.Id} ya existe en la lista`);
-        }
+      }
 
-        ids.add(`${personaJuridica.Id}`);
-        return {
-          id: `${personaJuridica.Id}`,
-          nombre: `${personaJuridica.NomProveedor}`,
-          tipo: 'persona_juridica',
-        };
-      }),
-    ];
+      const infoProveedor = data.proveedores.proveedor[0];
+      let detalles: DetalleProveedorDto;
+
+      if (infoProveedor.tipo_persona == 'JURIDICA') {
+        detalles = await this.obtenerDetalleProveedor(
+          infoProveedor.id_proveedor,
+        );
+      }
+
+      const combinedData = {
+        proveedor: infoProveedor,
+        representante: detalles,
+      };
+
+      return {
+        Success: true,
+        Status: HttpStatus.OK,
+        Message: 'Proveedor Encontrado',
+        Data: combinedData,
+      };
+    } catch (error) {
+      return {
+        Success: false,
+        Status: error.response?.status || 500,
+        Message: error.message || 'Error al consultar el proveedor',
+      };
+    }
+  }
+
+  async obtenerDetalleProveedor(id: string): Promise<DetalleProveedorDto> {
+    try {
+      const endpoint: string = this.configService.get<string>(
+        'ENDP_PERSONA_NATURAL_PROVEEDOR',
+      );
+      const url = `${endpoint}/${id}`;
+      const { data } = await axios.get<responseDetalleData>(url);
+
+      if (
+        data.personas_naturales == undefined ||
+        data.personas_naturales.proveedor == undefined
+      ) {
+        return null;
+      }
+
+      return data.personas_naturales.proveedor[0];
+    } catch (error) {
+      return null;
+    }
   }
 }
