@@ -12,7 +12,8 @@ API MID intermediaria entre el cliente ARGOv2 y el API de Agora.
 
 ### Variables de Entorno
 ```shell
-PROVEEDORES_MID_HTTP_PORT: [Puerto de ejecución API]
+ENDP_PROVEEDORES: [Endpoint de info proveedores]
+ENDP_PERSONA_NATURAL_PROVEEDOR: [Endpoint de persona natural proveedor]
 
 ```
 **NOTA:** Las variables se asignan en una archivo privado .env.
