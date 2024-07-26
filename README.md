@@ -54,6 +54,8 @@ pnpm test
 
 # Se ejecutará jest, validando los casos de prueba en los archivos .spec.ts
 
+pnpm test:cov
+# Validar la cobertura de las pruebas
 ```
 
 ## Estado CI
