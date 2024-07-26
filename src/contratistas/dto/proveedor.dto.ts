@@ -5,6 +5,9 @@ export class ProveedorDto {
   id_proveedor: string;
 
   @ApiProperty()
+  ciudad_expedicion_documento: string;
+
+  @ApiProperty()
   id_ciudad_contacto: string;
 
   @ApiProperty()

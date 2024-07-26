@@ -43,6 +43,7 @@ describe('ContratistasService', () => {
     it('debería retornar datos de proveedor', async () => {
       const mockProveedorData: ProveedorDto = {
         id_proveedor: '123',
+        ciudad_expedicion_documento: 'Bogotá D.C.',
         id_ciudad_contacto: '123',
         direccion: 'ABC',
         numero_documento: '123',
