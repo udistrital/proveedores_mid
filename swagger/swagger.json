@@ -29,7 +29,16 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Proveedor encontrado exitosamente"
+          },
+          "400": {
+            "description": "Solicitud incorrecta"
+          },
+          "404": {
+            "description": "Proveedor no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor"
           }
         }
       }

@@ -99,7 +99,7 @@ describe('ContratistasService', () => {
     it('Debería retornar Not Found', async () => {
       mockedAxios.get.mockResolvedValueOnce({ data: {} });
 
-      const result = await service.obtenerProveedor('invalid_id');
+      const result = await service.obtenerProveedor('1234');
 
       expect(result).toEqual({
         Success: false,
