@@ -1,34 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { ContratistasService } from './contratistas.service';
-import { CreateContratistaDto } from './dto/create-contratista.dto';
-import { UpdateContratistaDto } from './dto/update-contratista.dto';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
-@Controller('contratistas')
+@Controller('contratista')
 export class ContratistasController {
   constructor(private readonly contratistasService: ContratistasService) {}
 
-  @Post()
-  create(@Body() createContratistaDto: CreateContratistaDto) {
-    return this.contratistasService.create(createContratistaDto);
-  }
+  @Get('')
+  @ApiOperation({ summary: 'Consulta proveedor' })
+  @ApiQuery({
+    name: 'id',
+    type: 'string',
+    required: true,
+    example: '1234567890',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Proveedor encontrado exitosamente',
+  })
+  @ApiResponse({ status: 400, description: 'Solicitud incorrecta' })
+  @ApiResponse({ status: 404, description: 'Proveedor no encontrado' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor' })
+  async encontrarContratista(
+    @Query('id') id: string,
+  ): Promise<StandardResponse<any>> {
+    if (!id) {
+      return Promise.resolve({
+        Success: false,
+        Status: HttpStatus.BAD_REQUEST,
+        Message: 'El id es requerido',
+      });
+    }
+    const result = await this.contratistasService.obtenerProveedor(id);
 
-  @Get()
-  findAll() {
-    return this.contratistasService.findAll();
-  }
+    if (!result.Success) {
+      throw new HttpException(
+        {
+          Success: false,
+          Status: result.Status,
+          Message: result.Message,
+        },
+        result.Status,
+      );
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.contratistasService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContratistaDto: UpdateContratistaDto) {
-    return this.contratistasService.update(+id, updateContratistaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.contratistasService.remove(+id);
+    return result;
   }
 }
