@@ -8,7 +8,7 @@ import {
 import { ContratistasService } from './contratistas.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
-@Controller('contratista')
+@Controller('contratistas')
 export class ContratistasController {
   constructor(private readonly contratistasService: ContratistasService) {}
 
