@@ -7,7 +7,7 @@ paths:
       responses:
         '200':
           description: ''
-  /contratista:
+  /contratistas:
     get:
       operationId: ContratistasController_encontrarContratista
       summary: Consulta proveedor

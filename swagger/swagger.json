@@ -12,7 +12,7 @@
         }
       }
     },
-    "/contratista": {
+    "/contratistas": {
       "get": {
         "operationId": "ContratistasController_encontrarContratista",
         "summary": "Consulta proveedor",
