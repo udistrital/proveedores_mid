@@ -13,7 +13,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Proveedores API MID')
     .setDescription('API')
-    .setVersion('1.0')
+    .setVersion('1.0.0')
     .addTag('API')
     .build();
 

@@ -30,7 +30,7 @@ paths:
 info:
   title: Proveedores API MID
   description: API
-  version: '1.0'
+  version: 1.0.0
   contact: {}
 tags:
   - name: API
