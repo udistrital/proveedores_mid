@@ -53,7 +53,7 @@ steps:
         - push
 
   - name: run_tests
-    image: node:18
+    image: node:current-alpine
     commands:
       - pnpm run test
     when:
