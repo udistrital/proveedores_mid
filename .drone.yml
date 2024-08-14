@@ -40,7 +40,7 @@ steps:
         - push
 
   - name: install_dependencies
-    image: node:18.20.4-alpine
+    image: node:current-alpine
     commands:
       - corepack enable pnpm
       - pnpm install
@@ -53,7 +53,7 @@ steps:
         - push
 
   - name: run_tests
-    image: node:18
+    image: node:current-alpine
     commands:
       - pnpm run test
     when:
