@@ -1,8 +1,8 @@
-FROM node:18.20.4-alpine
+FROM node:current-alpine
 RUN apk update && apk add bash
 RUN apk add python3
 RUN apk add py3-pip
-RUN pip3 install awscli
+RUN apk add aws-cli
 
 WORKDIR /
 COPY dist dist
