@@ -55,6 +55,8 @@ steps:
   - name: run_tests
     image: node:current-alpine
     commands:
+      - corepack enable pnpm
+      - pnpm install
       - pnpm run test
     when:
       branch:
@@ -65,8 +67,10 @@ steps:
         - push
 
   - name: build
-    image: node:18
+    image: node:current-alpine
     commands:
+      - corepack enable pnpm
+      - pnpm install
       - pnpm run build
     when:
       branch:
