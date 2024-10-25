@@ -21,8 +21,8 @@
             "name": "id",
             "required": true,
             "in": "query",
-            "example": "1234567890",
             "schema": {
+              "example": "1234567890",
               "type": "string"
             }
           }

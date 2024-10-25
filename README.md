@@ -14,6 +14,7 @@ API MID intermediaria entre el cliente ARGOv2 y el API de Agora.
 ```shell
 ENDP_PROVEEDORES: [Endpoint de info proveedores]
 ENDP_PERSONA_NATURAL_PROVEEDOR: [Endpoint de persona natural proveedor]
+ENDP_CONTRATOS_PERSONA: [Endpoint de contratos persona]
 
 ```
 **NOTA:** Las variables se asignan en una archivo privado .env.

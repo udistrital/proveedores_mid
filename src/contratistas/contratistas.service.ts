@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { ProveedorDto } from './dto/proveedor.dto';
 import { DetalleProveedorDto } from './dto/detalle-proveedor.dto';
+import { ContratoPersonaDto } from './dto/contrato-persona.dto';
 
 interface responseData {
   proveedores: {
@@ -16,9 +17,15 @@ interface responseDetalleData {
   };
 }
 
+interface responseContratoData {
+  contratos_personas: {
+    contrato_persona: ContratoPersonaDto[];
+  };
+}
+
 @Injectable()
 export class ContratistasService {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) { }
 
   async obtenerProveedor(id: string): Promise<StandardResponse<any>> {
     try {
@@ -40,6 +47,7 @@ export class ContratistasService {
 
       const infoProveedor = data.proveedores.proveedor[0];
       let detalles: DetalleProveedorDto;
+      const contratos = await this.obtenerContratoProveedor(infoProveedor.numero_documento);
 
       if (infoProveedor.tipo_persona == 'JURIDICA') {
         detalles = await this.obtenerDetalleProveedor(
@@ -50,6 +58,7 @@ export class ContratistasService {
       const combinedData = {
         proveedor: infoProveedor,
         representante: detalles,
+        contratos: contratos,
       };
 
       return {
@@ -83,6 +92,28 @@ export class ContratistasService {
       }
 
       return data.personas_naturales.proveedor[0];
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async obtenerContratoProveedor(id: string): Promise<ContratoPersonaDto[]> {
+    try {
+      const endpoint: string = this.configService.get<string>(
+        'ENDP_CONTRATOS_PERSONA',
+      );
+      const url = `${endpoint}/${id}`;
+      const { data } = await axios.get<responseContratoData>(url);
+
+      if (
+        data.contratos_personas == undefined ||
+        data.contratos_personas.contrato_persona == undefined
+      ) {
+        return null;
+      }
+
+      return [data.contratos_personas.contrato_persona[0]]; 
+
     } catch (error) {
       return null;
     }
