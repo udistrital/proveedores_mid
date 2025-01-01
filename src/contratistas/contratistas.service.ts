@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ProveedorDto } from './dto/proveedor.dto';
 import { DetalleProveedorDto } from './dto/detalle-proveedor.dto';
 import { ContratoPersonaDto } from './dto/contrato-persona.dto';
+import { TipoPersonaDto } from './dto/tipo-persona.dto';
 
 interface responseData {
   proveedores: {
@@ -21,6 +22,12 @@ interface responseContratoData {
   contratos_personas: {
     contrato_persona: ContratoPersonaDto[];
   };
+}
+
+interface responseTipoPersonaData{
+  tipo_persona_id: {
+    tipo_persona_id: TipoPersonaDto[];
+  }
 }
 
 @Injectable()
@@ -114,6 +121,24 @@ export class ContratistasService {
 
       return [data.contratos_personas.contrato_persona[0]]; 
 
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async obtenerTipoPersonaId(tipo: string): Promise<TipoPersonaDto> {
+    try {
+      const endpoint: string = this.configService.get<string>(
+        'ENDP_PARAMETROS_CRUD',
+      );
+      const TipoParametroId: string = this.configService.get<string>(
+        'TIPO_PARAMETRO_ID',
+      );
+      const url = `${endpoint}/parametro?query=TipoParametroId:${TipoParametroId},Nombre:${tipo}&limit=0`;
+      
+      const { data } = await axios.get<responseTipoPersonaData>(url);
+
+      return data.tipo_persona_id[0];
     } catch (error) {
       return null;
     }
