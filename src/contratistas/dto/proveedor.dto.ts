@@ -47,6 +47,9 @@ export class ProveedorDto {
   tipo_persona: string;
 
   @ApiProperty()
+  tipo_persona_id: number;
+
+  @ApiProperty()
   tipo_cuenta_bancaria: string;
 
   @ApiProperty()
