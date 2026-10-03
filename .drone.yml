@@ -6,7 +6,7 @@ steps:
   - name: install_dependencies
     image: node:current-alpine
     commands:
-      - corepack enable pnpm
+      - npm install -g pnpm
       - pnpm install
     when:
       branch:
@@ -19,8 +19,8 @@ steps:
   - name: run_tests
     image: node:current-alpine
     commands:
-      - corepack enable pnpm
-      - pnpm install
+      - npm install -g pnpm
+      - pnpm install --frozen-lockfile
       - pnpm run test
     when:
       branch:
@@ -33,8 +33,8 @@ steps:
   - name: build
     image: node:current-alpine
     commands:
-      - corepack enable pnpm
-      - pnpm install
+      - npm install -g pnpm
+      - pnpm install --frozen-lockfile
       - pnpm run build
     when:
       branch:
@@ -45,12 +45,24 @@ steps:
         - push
 
   - name: run_sonar_scanner
-    image: aosapps/drone-sonar-plugin
-    settings:
-      sonar_host:
+    image: sonarsource/sonar-scanner-cli:latest
+    environment:
+      SONAR_HOST_URL:
         from_secret: SONAR_HOST
-      sonar_token:
+      SONAR_TOKEN:
         from_secret: SONAR_TOKEN
+      SONAR_SCANNER_OPTS: "-Dsonar.working.directory=/tmp/.scannerwork"
+    commands:
+      - sonar-scanner
+    when:
+      branch:
+        - feature/*
+        - develop
+        - release/*
+        - hotfix/*
+        - master
+      event:
+      - push
 
   - name: publish_to_ecr_release
     image: plugins/ecr
