@@ -39,10 +39,12 @@ describe('ContratistasService', () => {
 
   it('Debería estar definido', () => {
     expect(service).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('obtenerProveedor', () => {
     const mockProveedorData: ProveedorDto = {
+      tipo_persona_id: 1,
       id_proveedor: '123',
       ciudad_expedicion_documento: 'Bogotá D.C.',
       id_ciudad_contacto: '123',
@@ -59,7 +61,7 @@ describe('ContratistasService', () => {
       id_entidad_bancaria: '1',
       tipo_persona: 'JURIDICA',
       tipo_cuenta_bancaria: 'CORRIENTE',
-      fecha_ultima_modificacion: '2024-01-12 11:17:00'
+      fecha_ultima_modificacion: '2024-01-12 11:17:00',
     };
 
     const mockDetalleData: DetalleProveedorDto = {
@@ -74,7 +76,7 @@ describe('ContratistasService', () => {
       id_tipo_documento: '1',
       id_ciudad_expedicion_documento: '123',
       primer_nombre: 'MARIA',
-      id_proveedor_juridico: '123'
+      id_proveedor_juridico: '123',
     };
 
     const mockContratoData = {
@@ -82,7 +84,7 @@ describe('ContratistasService', () => {
       fecha_inicio: '2024-01-01',
       fecha_fin: '2024-12-31',
       valor_total: '100000000',
-      estado: 'ACTIVO'
+      estado: 'ACTIVO',
     };
 
     it('debería retornar datos de proveedor jurídico completos', async () => {
@@ -99,7 +101,9 @@ describe('ContratistasService', () => {
         }
         if (url.includes('contratos-persona-api')) {
           return Promise.resolve({
-            data: { contratos_personas: { contrato_persona: [mockContratoData] } },
+            data: {
+              contratos_personas: { contrato_persona: [mockContratoData] },
+            },
           });
         }
       });
@@ -124,7 +128,7 @@ describe('ContratistasService', () => {
         tipo_persona: 'NATURAL',
         nombre_completo_proveedor: 'JUAN PEREZ',
       };
-      
+
       mockedAxios.get.mockImplementation((url: string) => {
         if (url.includes('proveedores-api')) {
           return Promise.resolve({
@@ -133,7 +137,9 @@ describe('ContratistasService', () => {
         }
         if (url.includes('contratos-persona-api')) {
           return Promise.resolve({
-            data: { contratos_personas: { contrato_persona: [mockContratoData] } },
+            data: {
+              contratos_personas: { contrato_persona: [mockContratoData] },
+            },
           });
         }
       });
@@ -191,7 +197,7 @@ describe('ContratistasService', () => {
         id_tipo_documento: '1',
         id_ciudad_expedicion_documento: '123',
         primer_nombre: 'MARIA',
-        id_proveedor_juridico: '123'
+        id_proveedor_juridico: '123',
       };
 
       mockedAxios.get.mockResolvedValueOnce({
@@ -226,7 +232,7 @@ describe('ContratistasService', () => {
       fecha_inicio: '2024-01-01',
       fecha_fin: '2024-12-31',
       valor_total: '100000000',
-      estado: 'ACTIVO'
+      estado: 'ACTIVO',
     };
 
     it('Debería retornar datos del contrato del proveedor', async () => {
