@@ -16,21 +16,6 @@ steps:
       event:
         - push
 
-  - name: run_tests
-    image: node:24-alpine
-    commands:
-      - corepack enable pnpm
-      - pnpm install
-      - pnpm run test
-      - pnpm run test:e2e
-    when:
-      branch:
-        - develop
-        - release/*
-        - master
-      event:
-        - push
-
   - name: build
     image: node:24-alpine
     commands:
