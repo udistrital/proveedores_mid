@@ -6,7 +6,7 @@ API MID intermediaria entre el cliente ARGOv2 y el API de Agora.
 
 ### Tecnologías Implementadas y Versiones
 * NodeJS 24
-* NestJS 10
+* NestJS 11
 * pnpm 12
 * [Docker](https://docs.docker.com/engine/install/)
 * [Docker Compose](https://docs.docker.com/compose/)
@@ -16,6 +16,7 @@ API MID intermediaria entre el cliente ARGOv2 y el API de Agora.
 ENDP_PROVEEDORES: [Endpoint de info proveedores]
 ENDP_PERSONA_NATURAL_PROVEEDOR: [Endpoint de persona natural proveedor]
 ENDP_CONTRATOS_PERSONA: [Endpoint de contratos persona]
+ENDP_PARAMETROS_CRUD: [Endpoint de parametros]
 
 ```
 **NOTA:** Las variables se asignan en una archivo privado .env.
