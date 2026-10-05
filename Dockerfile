@@ -1,13 +1,7 @@
 FROM node:24-alpine
-RUN apk update && apk add bash
-RUN apk add python3
-RUN apk add py3-pip
-RUN apk add aws-cli
 
-WORKDIR /
+WORKDIR /app
 COPY dist dist
 COPY node_modules node_modules
-COPY entrypoint.sh entrypoint.sh
-RUN chmod +x ./entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["node", "dist/main"]
