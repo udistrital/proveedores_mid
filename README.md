@@ -5,8 +5,9 @@ API MID intermediaria entre el cliente ARGOv2 y el API de Agora.
 ## Especificaciones Técnicas
 
 ### Tecnologías Implementadas y Versiones
-* NodeJS 20
+* NodeJS 24
 * NestJS 10
+* pnpm 12
 * [Docker](https://docs.docker.com/engine/install/)
 * [Docker Compose](https://docs.docker.com/compose/)
 
@@ -53,10 +54,19 @@ Pruebas unitarias
 # Test
 pnpm test
 
+# Test
+pnpm test:e2e
+
 # Se ejecutará jest, validando los casos de prueba en los archivos .spec.ts
 
 pnpm test:cov
 # Validar la cobertura de las pruebas
+
+# Auditoría de vulnerabilidades
+pnpm run audit
+
+# Compilar proyecto
+pnpm run build
 ```
 
 ## Estado CI
