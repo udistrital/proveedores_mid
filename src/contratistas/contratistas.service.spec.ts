@@ -26,7 +26,7 @@ describe('ContratistasService', () => {
                 return 'http://persona-natural-api';
               if (key === 'ENDP_CONTRATOS_PERSONA')
                 return 'http://contratos-persona-api';
-              return null;
+              return 'http://parametro-api';
             }),
           },
         },
@@ -35,6 +35,10 @@ describe('ContratistasService', () => {
 
     service = module.get<ContratistasService>(ContratistasService);
     configService = module.get<ConfigService>(ConfigService);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('Debería estar definido', () => {
@@ -89,23 +93,26 @@ describe('ContratistasService', () => {
 
     it('debería retornar datos de proveedor jurídico completos', async () => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('proveedores-api')) {
+        if (url?.includes('proveedores-api')) {
           return Promise.resolve({
             data: { proveedores: { proveedor: [mockProveedorData] } },
           });
         }
-        if (url.includes('persona-natural-api')) {
+        if (url?.includes('persona-natural-api')) {
           return Promise.resolve({
             data: { personas_naturales: { proveedor: [mockDetalleData] } },
           });
         }
-        if (url.includes('contratos-persona-api')) {
+        if (url?.includes('contratos-persona-api')) {
           return Promise.resolve({
             data: {
               contratos_personas: { contrato_persona: [mockContratoData] },
             },
           });
         }
+        return Promise.resolve({
+          data: { Data: [{ Id: 1 }] },
+        });
       });
 
       const result = await service.obtenerProveedor('123');
@@ -130,18 +137,19 @@ describe('ContratistasService', () => {
       };
 
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('proveedores-api')) {
+        if (url?.includes('proveedores-api')) {
           return Promise.resolve({
             data: { proveedores: { proveedor: [proveedorNatural] } },
           });
         }
-        if (url.includes('contratos-persona-api')) {
+        if (url?.includes('contratos-persona-api')) {
           return Promise.resolve({
             data: {
               contratos_personas: { contrato_persona: [mockContratoData] },
             },
           });
         }
+        return Promise.resolve({ data: { Data: [{ Id: 1 }] } });
       });
 
       const result = await service.obtenerProveedor('123');
@@ -218,11 +226,13 @@ describe('ContratistasService', () => {
     });
 
     it('Debería manejar errores y retornar null', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockedAxios.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await service.obtenerDetalleProveedor('123');
 
       expect(result).toBeNull();
+      expect(consoleSpy).toHaveBeenCalled();
     });
   });
 
@@ -254,11 +264,13 @@ describe('ContratistasService', () => {
     });
 
     it('Debería manejar errores y retornar null', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockedAxios.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await service.obtenerContratoProveedor('123');
 
       expect(result).toBeNull();
+      expect(consoleSpy).toHaveBeenCalled();
     });
   });
 });
