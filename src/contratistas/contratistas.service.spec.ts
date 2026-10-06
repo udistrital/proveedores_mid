@@ -26,7 +26,7 @@ describe('ContratistasService', () => {
                 return 'http://persona-natural-api';
               if (key === 'ENDP_CONTRATOS_PERSONA')
                 return 'http://contratos-persona-api';
-              return null;
+              return 'http://parametro-api';
             }),
           },
         },
@@ -37,12 +37,18 @@ describe('ContratistasService', () => {
     configService = module.get<ConfigService>(ConfigService);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('Debería estar definido', () => {
     expect(service).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('obtenerProveedor', () => {
     const mockProveedorData: ProveedorDto = {
+      tipo_persona_id: 1,
       id_proveedor: '123',
       ciudad_expedicion_documento: 'Bogotá D.C.',
       id_ciudad_contacto: '123',
@@ -59,7 +65,7 @@ describe('ContratistasService', () => {
       id_entidad_bancaria: '1',
       tipo_persona: 'JURIDICA',
       tipo_cuenta_bancaria: 'CORRIENTE',
-      fecha_ultima_modificacion: '2024-01-12 11:17:00'
+      fecha_ultima_modificacion: '2024-01-12 11:17:00',
     };
 
     const mockDetalleData: DetalleProveedorDto = {
@@ -74,7 +80,7 @@ describe('ContratistasService', () => {
       id_tipo_documento: '1',
       id_ciudad_expedicion_documento: '123',
       primer_nombre: 'MARIA',
-      id_proveedor_juridico: '123'
+      id_proveedor_juridico: '123',
     };
 
     const mockContratoData = {
@@ -82,26 +88,31 @@ describe('ContratistasService', () => {
       fecha_inicio: '2024-01-01',
       fecha_fin: '2024-12-31',
       valor_total: '100000000',
-      estado: 'ACTIVO'
+      estado: 'ACTIVO',
     };
 
     it('debería retornar datos de proveedor jurídico completos', async () => {
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('proveedores-api')) {
+        if (url?.includes('proveedores-api')) {
           return Promise.resolve({
             data: { proveedores: { proveedor: [mockProveedorData] } },
           });
         }
-        if (url.includes('persona-natural-api')) {
+        if (url?.includes('persona-natural-api')) {
           return Promise.resolve({
             data: { personas_naturales: { proveedor: [mockDetalleData] } },
           });
         }
-        if (url.includes('contratos-persona-api')) {
+        if (url?.includes('contratos-persona-api')) {
           return Promise.resolve({
-            data: { contratos_personas: { contrato_persona: [mockContratoData] } },
+            data: {
+              contratos_personas: { contrato_persona: [mockContratoData] },
+            },
           });
         }
+        return Promise.resolve({
+          data: { Data: [{ Id: 1 }] },
+        });
       });
 
       const result = await service.obtenerProveedor('123');
@@ -124,18 +135,21 @@ describe('ContratistasService', () => {
         tipo_persona: 'NATURAL',
         nombre_completo_proveedor: 'JUAN PEREZ',
       };
-      
+
       mockedAxios.get.mockImplementation((url: string) => {
-        if (url.includes('proveedores-api')) {
+        if (url?.includes('proveedores-api')) {
           return Promise.resolve({
             data: { proveedores: { proveedor: [proveedorNatural] } },
           });
         }
-        if (url.includes('contratos-persona-api')) {
+        if (url?.includes('contratos-persona-api')) {
           return Promise.resolve({
-            data: { contratos_personas: { contrato_persona: [mockContratoData] } },
+            data: {
+              contratos_personas: { contrato_persona: [mockContratoData] },
+            },
           });
         }
+        return Promise.resolve({ data: { Data: [{ Id: 1 }] } });
       });
 
       const result = await service.obtenerProveedor('123');
@@ -191,7 +205,7 @@ describe('ContratistasService', () => {
         id_tipo_documento: '1',
         id_ciudad_expedicion_documento: '123',
         primer_nombre: 'MARIA',
-        id_proveedor_juridico: '123'
+        id_proveedor_juridico: '123',
       };
 
       mockedAxios.get.mockResolvedValueOnce({
@@ -212,11 +226,13 @@ describe('ContratistasService', () => {
     });
 
     it('Debería manejar errores y retornar null', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockedAxios.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await service.obtenerDetalleProveedor('123');
 
       expect(result).toBeNull();
+      expect(consoleSpy).toHaveBeenCalled();
     });
   });
 
@@ -226,7 +242,7 @@ describe('ContratistasService', () => {
       fecha_inicio: '2024-01-01',
       fecha_fin: '2024-12-31',
       valor_total: '100000000',
-      estado: 'ACTIVO'
+      estado: 'ACTIVO',
     };
 
     it('Debería retornar datos del contrato del proveedor', async () => {
@@ -248,11 +264,13 @@ describe('ContratistasService', () => {
     });
 
     it('Debería manejar errores y retornar null', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       mockedAxios.get.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await service.obtenerContratoProveedor('123');
 
       expect(result).toBeNull();
+      expect(consoleSpy).toHaveBeenCalled();
     });
   });
 });
