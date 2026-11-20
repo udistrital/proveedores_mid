@@ -1,12 +1,7 @@
-import {
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus,Query} from '@nestjs/common';
 import { ContratistasService } from './contratistas.service';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { StandardResponse } from '../standardResponse.interface';
 
 @Controller('contratistas')
 export class ContratistasController {

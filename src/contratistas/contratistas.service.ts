@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { ProveedorDto } from './dto/proveedor.dto';
 import { DetalleProveedorDto } from './dto/detalle-proveedor.dto';
 import { ContratoPersonaDto } from './dto/contrato-persona.dto';
 import { TipoPersonaDto } from './dto/tipo-persona.dto';
+import { StandardResponse } from '../standardResponse.interface';
 
 interface responseData {
   proveedores: {
@@ -33,7 +34,7 @@ interface responseTipoPersonaData {
 
 @Injectable()
 export class ContratistasService {
-  constructor(private configService: ConfigService) { }
+  constructor(private configService: ConfigService) {}
 
   async obtenerProveedor(id: string): Promise<StandardResponse<any>> {
     try {
@@ -55,9 +56,13 @@ export class ContratistasService {
 
       const infoProveedor = data.proveedores.proveedor[0];
       let detalles: DetalleProveedorDto;
-      const contratos = await this.obtenerContratoProveedor(infoProveedor.numero_documento);
+      const contratos = await this.obtenerContratoProveedor(
+        infoProveedor.numero_documento,
+      );
 
-      const tipoPersonaId = await this.obtenerTipoPersonaId(infoProveedor.tipo_persona);
+      const tipoPersonaId = await this.obtenerTipoPersonaId(
+        infoProveedor.tipo_persona,
+      );
       if (tipoPersonaId) {
         infoProveedor.tipo_persona_id = tipoPersonaId;
       }
@@ -106,6 +111,7 @@ export class ContratistasService {
 
       return data.personas_naturales.proveedor[0];
     } catch (error) {
+      console.error(`Error al obtener detalle del proveedor ${id}:`, error);
       return null;
     }
   }
@@ -126,8 +132,8 @@ export class ContratistasService {
       }
 
       return [data.contratos_personas.contrato_persona[0]];
-
     } catch (error) {
+      console.error(`Error al obtener contratos del proveedor ${id}:`, error);
       return null;
     }
   }
@@ -137,9 +143,8 @@ export class ContratistasService {
       const endpoint: string = this.configService.get<string>(
         'ENDP_PARAMETROS_CRUD',
       );
-      const TipoParametroId: string = this.configService.get<string>(
-        'TIPO_PARAMETRO_ID',
-      );
+      const TipoParametroId: string =
+        this.configService.get<string>('TIPO_PARAMETRO_ID');
 
       const tipoFormat = this.formatText(tipo);
       const url = `${endpoint}/parametro?query=TipoParametroId:${TipoParametroId},Nombre:${tipoFormat}&limit=0`;
@@ -148,6 +153,7 @@ export class ContratistasService {
 
       return data.Data[0].Id;
     } catch (error) {
+      console.error(`Error al obtener tipo de persona ${tipo}:`, error);
       return null;
     }
   }
